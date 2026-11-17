@@ -1,0 +1,13 @@
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.env
+.git
+.gitignore
+*.db
+cotizaciones_cenam.db
+generated_docs/*.pdf
+.venv
+venv/
+tests/

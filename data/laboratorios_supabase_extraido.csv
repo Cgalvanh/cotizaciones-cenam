@@ -1,0 +1,295 @@
+id_uni,codigo,descripcion,id_division,id_area,activo,laboratorio
+1,C001,Preparación de muestras para espectrometría,620.0,600.0,True,True
+2,C002,Espectrometría de absorción atómica/Horno de grafito,620.0,600.0,True,True
+3,C003,Microanálisis,610.0,600.0,True,True
+4,C008,Caracterización de partículas,610.0,600.0,True,True
+5,C007,Espectrofotometría de ultravioleta-visible,620.0,600.0,True,True
+6,C006,Espectrometría por fluorescencia de rayos X,610.0,600.0,True,True
+7,C009,Espectroscopía infrarroja y Raman,610.0,600.0,True,True
+8,C010,Medición de gases en materiales sólidos,620.0,600.0,True,True
+9,C013,Preparación de muestras orgánicas I,630.0,600.0,True,True
+10,C015,Espectrometría infrarojo FT-IR y Raman,610.0,600.0,False,True
+11,C016,Relojes Atómicos,430.0,400.0,True,True
+12,D003,Fibras ópticas y potencia óptica,520.0,500.0,True,True
+13,D004,FIBRAS OPTICAS,520.0,500.0,False,True
+14,D005,Espectroradiometría de Lámparas,520.0,500.0,False,True
+15,D006,Caracterización Óptica de Materiales,520.0,500.0,False,True
+16,D007,Espectrorradiometría de Detectores,520.0,500.0,False,True
+17,D008,Fotometría,520.0,500.0,True,True
+18,D009,Túnel fotométrico,520.0,500.0,True,True
+19,D011,Angulo,740.0,700.0,True,True
+20,D012,MEDICION DE BLOQUES PATRON POR COMPARACION MECANICA,740.0,700.0,False,True
+21,D013,CMM Óptica,740.0,700.0,True,True
+22,D016,INTERFEROMETRIA LASER,740.0,700.0,False,True
+23,D018,PATRONES Y CALIBRES,740.0,700.0,False,True
+24,E001,Resistencia Eléctrica - Efecto Hall Cuántico,410.0,400.0,False,True
+25,E002,Parámetros de reflexión y transmisión,440.0,400.0,True,True
+26,E003,Patrones Eléctricos Multifunciones,410.0,400.0,False,True
+27,E005,Humedad en gases,420.0,400.0,True,True
+28,E006,Contenido de humedad en sólidos,420.0,400.0,True,True
+29,E008,Termometría de no contacto,420.0,400.0,True,True
+30,E009,Impedancia,410.0,400.0,True,True
+31,E010,Tensión y Corriente Eléctrica Alterna,410.0,400.0,False,True
+32,E011,Tensión Eléctrica Continua - Efecto Josephson,410.0,400.0,False,True
+33,E012,Potencia y Energía - Servicios de potencia y energía eléctrica,410.0,400.0,False,True
+34,E013,Conductividad térmica,420.0,400.0,True,True
+35,E014,Termometría de contacto,420.0,400.0,True,True
+36,H02A,PAR TORSIONAL,720.0,700.0,False,True
+37,Q024,ELECTROQUIMICA,630.0,600.0,False,True
+38,C005,Preparación de muestras,610.0,600.0,True,True
+39,E018,Potencia electromagnética,440.0,400.0,True,True
+40,F001,Patrones de Referencia de Presión,720.0,700.0,True,True
+41,F002,Patrones Nacionales de Presión,720.0,700.0,True,True
+42,F005,Pequeñas Masas,730.0,700.0,True,True
+43,F006,Patrones de Vacío,720.0,700.0,True,True
+44,F007,Densidad de Sólidos y Líquidos,730.0,700.0,True,True
+45,F008,Patrones de Referencia de Masa,730.0,700.0,True,True
+46,F010,Patrón nacional de aceleración transitoria,510.0,500.0,True,True
+47,F011,Patrón Nacional de Aceleración Alternante,510.0,500.0,True,True
+48,F012,Patrones de transferencia de vibraciones,510.0,500.0,True,True
+49,F013,Aceleración angular,510.0,500.0,True,True
+50,F014,Cámara de audiometría,510.0,500.0,False,True
+51,F015,Sistema de Referencia Nacional para Sonometría,510.0,500.0,False,True
+52,F016,Acústica Aplicada,510.0,500.0,False,True
+53,F017,Cámara Semi-Anecoica,510.0,500.0,True,True
+54,F019,Patrón Nacional de Acústica,510.0,500.0,False,True
+56,F022,Primario de pequeños volúmenes,710.0,700.0,True,True
+57,G'002,Par dinámico,510.0,500.0,True,True
+58,G'003,Vibraciones industriales,510.0,500.0,True,True
+59,H001,TENACIDAD.,720.0,700.0,False,True
+60,H002,TRANSFERENCIA DE DUREZA,720.0,700.0,False,True
+61,H004,Patrones primarios de fuerza,720.0,700.0,True,True
+62,H005,Transferencia de fuerza,720.0,700.0,True,True
+63,H006,Primarios de Grandes Volúmenes,710.0,700.0,True,True
+64,H008,Grandes Masas,730.0,700.0,True,True
+65,H009,Pequeños Flujos de Líquidos,710.0,700.0,True,True
+66,H010,Primarios de Flujo de Gas,710.0,700.0,True,True
+67,H011,Primario de flujo de líquidos,710.0,700.0,True,True
+68,Q002,Preparación de muestras,620.0,600.0,True,True
+69,Q008,Espectrometría de masas con plasma acoplado inductivamente,620.0,600.0,True,True
+70,Q013,Preparación de muestras para métodos clásicos,620.0,600.0,True,True
+71,Q014,Titulación Coulombimétrica a corriente constante,620.0,600.0,True,True
+73,Q019,Preparación de muestras orgánicas II,630.0,600.0,True,True
+74,Q021,Cromatografía de gases I,630.0,600.0,True,True
+75,Q022,CONDUCTIVIDAD ELECTROLÍTICA,630.0,600.0,False,True
+76,Q023,Espectrometría de masas,630.0,600.0,True,True
+77,Q025,Cromatografía de gases II,630.0,600.0,True,True
+78,QS03,Análisis y certificación de mezclas de gases.,630.0,600.0,True,True
+79,811,Educación Continua,810.0,800.0,False,False
+80,812,Información y Documentación,810.0,800.0,False,False
+81,C01A,PREPARACION MUESTRAS INORGANICAS II,620.0,600.0,True,True
+82,F021,Primario de Viscosidad,710.0,700.0,True,True
+83,DUCT,PEMEX I,710.0,700.0,False,True
+84,TAD,PEMEX II,710.0,700.0,False,True
+85,H007,GRANDES MASAS I,730.0,700.0,False,True
+86,D034,Radiómetro criogénico,520.0,500.0,True,True
+87,C012,CUARTO DE BALANZAS,630.0,600.0,False,True
+88,C014,Cromatografía de Gases y Líquidos,630.0,600.0,True,True
+89,Q001,Preparación gravimétrica,620.0,600.0,True,True
+90,Q003,Espectrometría de emisión atómica con plasma acoplado inductivamente,620.0,600.0,True,True
+91,Q010,CUARTO LIMPIO,620.0,600.0,False,True
+92,Q012,Electrogravimetría,620.0,600.0,True,True
+93,Q017,Preparación de muestras orgánicas,630.0,600.0,True,True
+94,D014A,Micrometrología,740.0,700.0,True,True
+95,D014C,Instrumentos industriales,740.0,700.0,True,True
+96,D015,Máquinas de medición por coordenadas II (MITUTOYO),740.0,700.0,True,True
+97,D015,MAQUINA DE MEDICION POR COORDENADAS II,740.0,700.0,False,True
+98,D017A,Calibración de bloques patrón por interferometría,740.0,700.0,True,True
+99,D017B,Calibración de bloques patrón por comparación mecánica,740.0,700.0,True,True
+100,D017C,Acabado superficial,740.0,700.0,True,True
+101,D018A,Patrones y Calibres,740.0,700.0,True,True
+102,D018B,Redondez,740.0,700.0,True,True
+103,E036,Potencia y Energía - Servicios de calidad de la potencia,410.0,400.0,False,True
+105,D037,Dosimetría óptica,520.0,500.0,True,True
+106,LM01,Móvil de Flujo y Volumen,710.0,700.0,True,True
+107,Q005,Titulación gravimétrica - potenciométrica,620.0,600.0,True,True
+108,610,CERAMICOS,610.0,600.0,False,True
+109,620,METALES,620.0,600.0,False,True
+110,630,POLIMEROS,630.0,600.0,False,True
+111,C004,Fluorescencia de rayos X por reflexion total.,610.0,600.0,True,True
+112,C017,RELOJ ATOMICO,430.0,400.0,False,True
+113,D014,LABORATORIO DE ACABADO SUPERFICIAL,740.0,700.0,False,True
+114,D015,MEDICION DE COORDENADAS DE ALTA EXACTITUD,740.0,700.0,False,True
+115,D017,MEDICION DE BLOQUES PATRON POR INTERFEROMETRIA,740.0,700.0,False,True
+116,D019,LASERES ESTABILIZADOS,740.0,700.0,False,True
+117,E007,Conductividad Térmica,420.0,400.0,False,True
+118,E015,Multifunciones de Termometría,420.0,400.0,True,True
+119,E017,POTENCIA ELECTROMAGNÉTICA,410.0,400.0,False,True
+120,F004,Patrón Nacional de Densidad,730.0,700.0,False,True
+121,F018,CALIBRACIONES INDUSTRIALES EN VIBRACIONES,510.0,500.0,False,True
+122,H012,LABORATORIO MOVIL DE GRANDES VOLUMENES,710.0,700.0,False,True
+123,H013,FLUJO DE LIQUIDOS,710.0,700.0,False,True
+124,Q004,Espectrometría de absorción atómica,620.0,600.0,True,True
+125,Q020,Preparación gravimétrica de muestras,630.0,600.0,True,True
+126,D14B,LABORATORIO DE INSTRUMENTOS INDUSTRIALES,740.0,700.0,False,True
+127,D14C,ACABADO SUPERFICIAL,740.0,700.0,False,True
+128,C020,DISEMINACION DE TIEMPO,430.0,400.0,False,True
+129,E004,TENSION EN C.C.,410.0,400.0,False,True
+130,E032,MAGNETISMO,410.0,400.0,False,True
+131,G'003,"ANÁLISIS MODAL, IMPACTO Y CHOQUE",510.0,500.0,False,True
+132,000,Mesura,900.0,900.0,False,False
+133,330,División de Asuntos Jurídicos,330.0,300.0,False,False
+134,000,PRUEBAS DE APTITUD,600.0,600.0,True,False
+135,H007,Instrumentos para Pesar,730.0,700.0,True,True
+136,F003,Instrumentos para la Medición de Densidad,730.0,700.0,True,True
+137,Q016,Cromatografía de líquidos de alta resolución,630.0,600.0,True,True
+138,E039,Densidad de Flujo Magnético,410.0,400.0,False,True
+139,Z008,Antenas y campos electromagnéticos,440.0,400.0,False,True
+140,F018,Patrón nacional de ultrasonido,510.0,500.0,True,True
+141,F020,Cámara anecoica,510.0,500.0,True,True
+142,G'001,Velocidad lineal,510.0,500.0,True,True
+143,821,Automatización Electrónica,820.0,800.0,True,False
+144,Q011,Medición de humedad,620.0,600.0,True,True
+145,Q015,Sistema de Pretratamiento de Agua,620.0,600.0,True,True
+146,823,Tecnología de Fabricación,820.0,800.0,False,False
+147,F009,Patrón Nacional de Masa,730.0,700.0,False,True
+148,822,Unidad de informática y comunicaciones,820.0,800.0,False,False
+149,D012,Láseres estabilizados,740.0,700.0,True,True
+150,D016,Reglas,740.0,700.0,True,True
+151,D019,Interferometría Láser,740.0,700.0,True,True
+152,D021,Termometría dimensional,740.0,700.0,True,True
+153,313,Departamento de Servicios Generales,310.0,300.0,False,False
+154,311,Departamento de Adquisiciones,310.0,300.0,False,False
+155,QS04,Procesamiento de materiales de referencia de matriz natural,620.0,600.0,True,True
+156,QS05,Procesamiento de materiales de referencia de matriz natural,630.0,600.0,False,True
+157,Q018,Cuarto limpio/Dilución isotópica,620.0,600.0,True,True
+158,QS01,Preparación gravimétrica primaria de gases.,630.0,600.0,True,True
+159,Q026,Cromatografía de gases y líquidos,630.0,600.0,True,True
+160,Q010,Cuarto limpio,630.0,600.0,True,True
+162,Q006,Almacén de materiales de referencia en proceso,620.0,600.0,True,True
+163,813,Departamento de servicios a la industria,810.0,800.0,True,False
+165,110,Asesor de la Dirección General.,110.0,100.0,False,False
+166,120,Secretario Particular de la Dirección Gral.,120.0,100.0,True,False
+167,121,Unidad de Relaciones Públicas.,121.0,100.0,True,False
+168,210,Departamento de Evaluación y Control.,210.0,200.0,False,False
+169,211,Departamento de Auditoría,211.0,200.0,True,False
+170,212,"Departamento de Seguimiento, Enlace e Información.",212.0,200.0,True,False
+171,220,Departamento de Supervisión y Auditoría.,220.0,200.0,False,False
+172,221,Departamento Legal.,221.0,200.0,True,False
+173,301,Unidad de Control Administrativo,301.0,300.0,False,False
+174,312,Departamento de Obra Pública,310.0,300.0,False,False
+175,314,Unidad de Mantenimiento,310.0,300.0,False,False
+176,321,Departamento de Contabilidad,320.0,300.0,False,False
+177,322,Departamento de Programación y Presupuesto,320.0,300.0,False,False
+178,323,Departamento de Recursos Financieros,320.0,300.0,False,False
+179,324,Departamento de Recursos Humanos,320.0,300.0,False,False
+180,816,Coordinación de Calibraciones.,810.0,800.0,True,False
+181,999,Supervisión de Obra.,999.0,900.0,True,False
+183,C001,Preparación de Muestras para Espectrometría,610.0,600.0,False,True
+184,U001,Flujo de Hidrocarburos,710.0,700.0,True,True
+186,E017,Compatibilidad electromagnética,440.0,400.0,True,True
+187,C022,Preparación de materiales de referencia,630.0,600.0,True,True
+188,H003,Par Torsional,720.0,700.0,True,True
+189,400,Oficina....,400.0,400.0,False,False
+190,100,Dirección General,100.0,100.0,True,False
+191,110,"Dirección de Planeación, Vinculación e Innovación",110.0,100.0,True,False
+192,130,División de Aseguramiento de Calidad,130.0,100.0,True,False
+193,140,División de Asuntos Jurídicos,,,True,False
+194,830,Dirección de Informática y Comunicaciones,830.0,800.0,True,False
+195,800,Dirección General de Servicios Tecnológicos,800.0,800.0,True,False
+196,810,"Dirección de Enlace, Información y Documentación",810.0,800.0,True,False
+197,811,Subdirección de Educación Continua,810.0,800.0,True,False
+198,812,Subdirección de Información y Documentación,810.0,800.0,True,False
+199,813,Subdirección de Servicios a la Industria,810.0,800.0,True,False
+208,814,Subdirec.de Ser. de Evaluación Metrológica y Promoción Ind.,810.0,800.0,True,False
+209,200,Órgano Interno de Control,200.0,200.0,True,False
+210,210,Área de Auditoría Interna,210.0,200.0,True,False
+211,220,Área de Responsabilidades y Área de Quejas,220.0,200.0,True,False
+212,831,Subdirección de Comunicaciones,830.0,800.0,True,False
+213,832,Subdirección de Informática,830.0,800.0,True,False
+214,300,Dirección General de Administración y Finanzas,300.0,300.0,True,False
+215,310,Dirección de Administración,310.0,300.0,True,False
+216,311,Subdirección de Adquisiciones,310.0,300.0,True,False
+217,312,Subdirección de Obra Pública,310.0,300.0,True,False
+218,313,Subdirección de Servicios Generales y Recursos Materiales,310.0,300.0,True,
+219,314,Subdirección de Mantenimiento,310.0,300.0,True,False
+220,320,Dirección de Finanzas,320.0,300.0,True,False
+221,321,Subdirección de Contabilidad,320.0,300.0,True,False
+222,322,Subdirección de Programación y Presupuesto,320.0,300.0,True,False
+223,323,Subdirección de Recursos Financieros,320.0,300.0,True,False
+224,330,Dirección de Asuntos Jurídicos,330.0,300.0,False,False
+225,330,Subdirección Jurídica,330.0,300.0,True,False
+226,340,Dirección de Recursos Humanos,340.0,300.0,True,False
+244,341,"Subdirección de Contratación, Capacitación y Desarrollo",340.0,300.0,True,False
+245,342,Subdirección de Nómina,340.0,300.0,True,False
+246,820,Dirección de Apoyo Tecnológico,820.0,800.0,False,False
+247,821,Subdirección de Automatización Electrónica,820.0,800.0,False,False
+248,822,Subdirección de Tecnologías de Fabricación,820.0,800.0,False,False
+250,L020,Preparación gravimétrica y procesamiento de muestras,630.0,600.0,True,True
+251,L021,Extracción y calidad del ADN,630.0,600.0,True,True
+252,L022,Medición de ADN mediante qPCR y secuenciación,630.0,600.0,True,True
+253,L023,Mediciones de ácidos nucleicos mediante dPCR,630.0,600.0,True,True
+254,L07,Propiedades ópticas de materiales 1,520.0,500.0,True,True
+255,L06,Propiedades ópticas de materiales 2,520.0,500.0,True,True
+256,L05,Propiedades ópticas de materiales 3,520.0,500.0,True,True
+257,L14,Primario de presión acústica,510.0,500.0,True,True
+258,L15,Nuevas tecnologías en metrología acústica,510.0,500.0,True,True
+259,L16,Sonometría,510.0,500.0,True,True
+260,Q022,Conductividad electrolítica,620.0,600.0,True,True
+261,Q024,Electroquímica,620.0,600.0,True,True
+262,C015,Cromatografía de líquidos y masas,630.0,600.0,True,True
+263,L03,Máquinas de medición por coordenadas  MITUTOYO “LEGEX”,740.0,700.0,True,True
+264,D004,Radiación solar,520.0,500.0,True,True
+265,D005,Goniofotómetro,520.0,500.0,True,True
+266,D006,Espectrorradiometría de detectores,520.0,500.0,True,True
+267,D007,Espectroradiometría de lámparas,520.0,500.0,True,True
+268,L17,Laboratorio de dureza,720.0,700.0,False,True
+269,L08,Laboratorio de aceleración de la gravedad,720.0,700.0,False,True
+270,L019,Laser tracker,740.0,700.0,True,True
+271,L001,Patrón Nacional de Masa,730.0,700.0,True,True
+272,L004,Patrón Nacional de Densidad,730.0,700.0,True,True
+273,F015,Potencia ultrasónica,510.0,500.0,True,True
+274,F016,Aceleración transitoria de alta intensidad,510.0,500.0,True,True
+275,F019,Electroacústica,510.0,500.0,True,True
+276,C012,Cuarto de balanzas,610.0,600.0,True,True
+277,821,Automatización,820.0,800.0,True,False
+278,832,Desarrollo,830.0,800.0,True,False
+279,822,Laboratorio de Tecnologías de Fabricación,820.0,800.0,True,False
+280,L08,Laboratorio de aceleración en caída libre,720.0,700.0,False,True
+281,L011,Caracterización de materiales avanzados,630.0,600.0,True,True
+282,QS02,Almacén de MRP de mezclas de gases,630.0,600.0,True,True
+283,600-a,Tecnologías emergentes,600.0,600.0,False,False
+284,600-b,Gases,600.0,600.0,False,False
+285,600-c,Pureza e Hidrocarburos,600.0,600.0,False,False
+286,610-a,Ciencia de los materiales,610.0,600.0,False,False
+287,620-a,Electroquímica,620.0,600.0,False,False
+288,620-b,Espectrometría de masas,620.0,600.0,False,False
+289,630-a,Análisis Orgánico,630.0,600.0,False,False
+290,E001,Resistencia Eléctrica,410.0,400.0,False,True
+291,E003,Equipos Multifunciones,410.0,400.0,False,True
+292,E010,Tensión y Corriente Eléctrica Alterna,410.0,400.0,False,True
+293,E011,Tensión Eléctrica Continua,410.0,400.0,False,True
+294,Q007,Zona de refrigeradores y circuladores,620.0,600.0,True,True
+295,Q034,Materiales de Referencia Orgánicos I,630.0,600.0,True,True
+296,Q035,Materiales de Referencia Organicos II,630.0,600.0,True,True
+297,Q033,Limpieza de material,630.0,600.0,False,True
+298,L17,Dureza,700.0,700.0,True,True
+299,L08,Laboratorio de Aceleración de la Gravedad en Caída Libre,700.0,700.0,True,True
+300,Q016,Laboratorio de Cromatografía de Líquidos de Alta Resolución,600.0,600.0,False,True
+301,Q020,Preparación Gravimétrica de Muestras.,600.0,600.0,False,True
+302,C027,Laboratorio del Peine de Frecuencias,430.0,400.0,True,True
+303,G012,Hexápodo y Maquinaria Rotativa,510.0,500.0,True,True
+304,610-a,Grupo de Ciencia de los Materiales,610.0,600.0,True,False
+305,610-b,Grupo de Biometrología,610.0,600.0,True,False
+306,620-a,Grupo de Electroquímica,620.0,600.0,True,False
+307,620-b,Grupo de Espectrometría de Masas,620.0,600.0,True,False
+308,630-a,Grupo de Análisis Orgánico,630.0,600.0,True,False
+309,630-b,Grupo de Gases,630.0,600.0,True,False
+310,630-c,Grupo de Análisis Fisicoquímico de Materiales,630.0,600.0,True,False
+311,L012B,Efecto Hall Cuántico,410.0,400.0,True,True
+312,L012C,Alta Tensión – Alta Corriente,410.0,400.0,True,True
+313,E012,Propiedades magnéticas de los Materiales,410.0,400.0,True,True
+314,E027,Emisiones conducidas de campo electromagnético,440.0,400.0,True,True
+315,L18B,Índice de absorción específica de campo electromagnético (SAR),440.0,400.0,True,True
+316,L012A,Resistencia Eléctrica,410.0,400.0,True,True
+317,L009A,Patrones Eléctricos Multifunciones,410.0,400.0,True,True
+318,L010,Tensión y Corriente Eléctrica Alterna,410.0,400.0,True,True
+319,L009B,Potencia y Energía - Servicios de potencia y energía eléctrica,410.0,400.0,True,True
+320,L009C,Potencia y Energía - Servicios de calidad de la potencia,410.0,400.0,True,True
+321,L013,Tensión Eléctrica Continua - Efecto Josephson,410.0,400.0,True,True
+322,E037,Densidad de Flujo Magnético,410.0,400.0,True,True
+323,E007,Emisividad espectral,420.0,400.0,True,True
+324,P001,Antenas y campos electromagnéticos,440.0,400.0,True,True
+325,840,"Dirección de Planeación, Vinculación e Innovación",840.0,800.0,True,False
+326,600,Dirección General de Metrología de Materiales,600.0,600.0,True,True
+327,L18A,Parámetros de Reflexión y Transmisión,440.0,400.0,True,True

@@ -1,0 +1,16 @@
+clave,nombre,id_area,direccion
+410,Dirección de Mediciones Lectromagnéticas,400,400 - Metrología Eléctrica
+420,Dirección de Termometría,400,400 - Metrología Eléctrica
+430,Dirección de Tiempo y Frecuencia,400,400 - Metrología Eléctrica
+440,Dirección de Radiofrecuencias,400,400 - Metrología Eléctrica
+510,Dirección de Vibraciones y Acústica,500,500 - Metrología Física
+520,Dirección de Óptica y Radiometría,500,500 - Metrología Física
+610,Dirección de Materiales Metálicos y Cerámicos,600,600 - Metrología de Materiales
+620,Dirección de Materiales Inorgánicos,600,600 - Metrología de Materiales
+630,Dirección de Materiales Orgánicos,600,600 - Metrología de Materiales
+700,Dirección de Metrología Mecánica,700,700 - Metrología Mecánica
+710,Dirección de Flujo y Volumen,700,700 - Metrología Mecánica
+720,Dirección de Fuerza y Presión,700,700 - Metrología Mecánica
+730,Dirección de Masa y Densidad,700,700 - Metrología Mecánica
+740,Dirección de Metrología Dimensional,700,700 - Metrología Mecánica
+810,Dirección de Servicios tecnológicos,800,800 - Servicios Tecnológicos

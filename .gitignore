@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.db
+.env
+nube_segura/.env
+generated_docs/
+nube_segura/generated_docs/
+nube_segura/__pycache__/
