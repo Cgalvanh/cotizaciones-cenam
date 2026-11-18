@@ -3,6 +3,8 @@ import csv
 import os
 import re
 import hashlib
+import random
+import uuid
 from datetime import datetime, timedelta
 
 DB_PATH = os.path.abspath("cotizaciones_cenam.db")
@@ -211,6 +213,37 @@ def init_db():
     add_col_if_missing("solicitudes_master", "fecha_aceptacion_cotizacion", "TEXT")
     add_col_if_missing("solicitudes_master", "fecha_confirmacion_programa", "TEXT")
     add_col_if_missing("solicitudes_master", "orden_compra_cliente", "TEXT")
+    add_col_if_missing("solicitudes_master", "token_seguimiento", "TEXT")
+    add_col_if_missing("solicitudes_master", "no_orden_compra", "TEXT")
+    add_col_if_missing("solicitudes_master", "orden_compra_pdf", "TEXT")
+    add_col_if_missing("solicitudes_master", "fecha_aceptacion_cliente", "TEXT")
+    add_col_if_missing("solicitudes_master", "partidas_aceptadas_json", "TEXT")
+    add_col_if_missing("solicitudes_master", "origen", "TEXT DEFAULT 'SSI'")
+
+    # Tabla de codigos OTP para acceso seguro del cliente
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS codigos_otp (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        correo TEXT NOT NULL,
+        codigo_hash TEXT NOT NULL,
+        expiracion TEXT NOT NULL,
+        usado INTEGER DEFAULT 0,
+        creado_en TEXT NOT NULL
+    );
+    """)
+
+    # Tabla de auditoria
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS bitacora_auditoria (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        usuario_correo TEXT NOT NULL,
+        accion TEXT NOT NULL,
+        entidad TEXT NOT NULL,
+        registro_id TEXT,
+        detalles TEXT,
+        fecha TEXT NOT NULL
+    );
+    """)
 
     # Columnas en sub_solicitudes_at
     add_col_if_missing("sub_solicitudes_at", "fecha_recepcion_prog", "TEXT")
@@ -339,58 +372,80 @@ def load_seed_data():
     conn.commit()
     conn.close()
 
+def log_auditoria(usuario_correo, accion, entidad, registro_id, detalles):
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        c.execute("""
+            INSERT INTO bitacora_auditoria (usuario_correo, accion, entidad, registro_id, detalles, fecha)
+            VALUES (?, ?, ?, ?, ?, ?)
+        """, (usuario_correo, accion, entidad, str(registro_id), str(detalles), now_str))
+        conn.commit()
+        conn.close()
+    except Exception as e:
+        print(f"Error logging audit trail: {e}")
+
 # Consecutivos Institucionales Oficiales con Sufijo PR
 def get_next_solicitud_numbers(count=1):
     """Genera una lista de N números consecutivos de solicitud con formato YYYY###PR."""
-    conn = get_connection()
-    c = conn.cursor()
     year = datetime.now().year
-    c.execute("SELECT no_solicitud FROM solicitudes_master ORDER BY id DESC")
-    rows = c.fetchall()
-    conn.close()
-    
-    max_num = 0
-    for r in rows:
-        val = str(r['no_solicitud'] or '')
-        m = re.search(r"(\d+)(?:PR)?$", val, re.IGNORECASE)
-        if m:
-            try:
-                digits = m.group(1)
-                seq = int(digits[-3:])
-                if seq > max_num:
-                    max_num = seq
-            except ValueError:
-                pass
-                
-    return [f"{year}{(max_num + i):03d}PR" for i in range(1, count + 1)]
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT no_solicitud FROM solicitudes_master ORDER BY id DESC")
+        rows = c.fetchall()
+        conn.close()
+        
+        max_num = 0
+        for r in rows:
+            val = str(r['no_solicitud'] or '')
+            m = re.search(r"(\d+)(?:PR)?$", val, re.IGNORECASE)
+            if m:
+                try:
+                    digits = m.group(1)
+                    seq = int(digits[-3:])
+                    if seq > max_num:
+                        max_num = seq
+                except ValueError:
+                    pass
+                    
+        return [f"{year}{(max_num + i):03d}PR" for i in range(1, count + 1)]
+    except Exception as e:
+        print(f"Advertencia calculando números de solicitud: {e}")
+        return [f"{year}{i:03d}PR" for i in range(1, count + 1)]
 
 def get_next_solicitud_number():
     return get_next_solicitud_numbers(1)[0]
 
 def get_next_folio_number():
     """Genera consecutivo exacto: 4 dígitos + año + sufijo PR (ej. 0001-2026PR, 0010-2026PR)."""
-    conn = get_connection()
-    c = conn.cursor()
     year = datetime.now().year
-    c.execute("SELECT no_folio FROM solicitudes_master ORDER BY id DESC")
-    rows = c.fetchall()
-    conn.close()
-    
-    max_num = 0
-    for r in rows:
-        val = str(r['no_folio'] or '')
-        # Formato 0009-2026PR o 231-2026
-        m = re.search(r"^(\d+)-", val)
-        if m:
-            try:
-                seq = int(m.group(1))
-                if seq > max_num:
-                    max_num = seq
-            except ValueError:
-                pass
-                
-    next_seq = max_num + 1
-    return f"{next_seq:04d}-{year}PR"
+    try:
+        conn = get_connection()
+        c = conn.cursor()
+        c.execute("SELECT no_folio FROM solicitudes_master ORDER BY id DESC")
+        rows = c.fetchall()
+        conn.close()
+        
+        max_num = 0
+        for r in rows:
+            val = str(r['no_folio'] or '')
+            # Formato 0009-2026PR o 231-2026
+            m = re.search(r"^(\d+)-", val)
+            if m:
+                try:
+                    seq = int(m.group(1))
+                    if seq > max_num:
+                        max_num = seq
+                except ValueError:
+                    pass
+                    
+        next_seq = max_num + 1
+        return f"{next_seq:04d}-{year}PR"
+    except Exception as e:
+        print(f"Advertencia calculando número de folio: {e}")
+        return f"0001-{year}PR"
 
 def get_next_cotizacion_number():
     """Genera consecutivo exacto: año (2 dígitos) + 4 dígitos + sufijo PR (ej. 260001PR, 260545PR)."""
@@ -761,6 +816,224 @@ def limpiar_solicitudes_y_programaciones():
     conn.commit()
     conn.close()
     return conteos
+
+# ========================================================
+# FUNCIONES PARA PORTAL PÚBLICO Y ACCESO SEGURO CLIENTE (OTP)
+# ========================================================
+
+def hash_otp(codigo: str) -> str:
+    salt = "cenam_otp_salt_2026"
+    return hashlib.sha256((codigo.strip() + salt).encode("utf-8")).hexdigest()
+
+def crear_codigo_otp(correo: str) -> str:
+    """Genera y almacena un código OTP de 6 dígitos válido por 10 minutos."""
+    correo_clean = correo.strip().lower()
+    codigo = f"{random.randint(100000, 999999)}"
+    h = hash_otp(codigo)
+    now = datetime.now()
+    exp = now + timedelta(minutes=10)
+    now_str = now.strftime("%Y-%m-%d %H:%M:%S")
+    exp_str = exp.strftime("%Y-%m-%d %H:%M:%S")
+
+    conn = get_connection()
+    c = conn.cursor()
+    # Invalidar anteriores activos para este correo
+    c.execute("UPDATE codigos_otp SET usado = 1 WHERE LOWER(correo) = ? AND usado = 0", (correo_clean,))
+    # Registrar nuevo código
+    c.execute("""
+        INSERT INTO codigos_otp (correo, codigo_hash, expiracion, usado, creado_en)
+        VALUES (?, ?, ?, 0, ?)
+    """, (correo_clean, h, exp_str, now_str))
+    conn.commit()
+    conn.close()
+    return codigo
+
+def verificar_codigo_otp(correo: str, codigo: str) -> bool:
+    """Valida el código OTP sin permitir reutilización."""
+    correo_clean = correo.strip().lower()
+    codigo_clean = codigo.strip().replace(" ", "").replace("-", "")
+    h = hash_otp(codigo_clean)
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("""
+        SELECT id FROM codigos_otp
+        WHERE LOWER(correo) = ? AND codigo_hash = ? AND usado = 0 AND expiracion >= ?
+        ORDER BY id DESC LIMIT 1
+    """, (correo_clean, h, now_str))
+    row = c.fetchone()
+    if row:
+        otp_id = row['id']
+        c.execute("UPDATE codigos_otp SET usado = 1 WHERE id = ?", (otp_id,))
+        conn.commit()
+        conn.close()
+        return True
+    conn.close()
+    return False
+
+def crear_solicitud_web(cliente_data: dict, instrumentos: list) -> dict:
+    """Crea la solicitud desde el portal web asignándole Folio y Token de acceso directo."""
+    token = uuid.uuid4().hex[:12].upper()
+    resultado = crear_expediente_y_solicitudes(cliente_data, instrumentos, user_correo="portal.web@cenam.mx")
+    no_folio = resultado["no_folio"]
+
+    conn = get_connection()
+    c = conn.cursor()
+    c.execute("UPDATE solicitudes_master SET token_seguimiento = ?, origen = 'WEB' WHERE no_folio = ?", (token, no_folio))
+    conn.commit()
+    conn.close()
+
+    resultado["token_seguimiento"] = token
+    return resultado
+
+def consultar_solicitudes_cliente(correo: str = None, folio: str = None, token: str = None):
+    """Consulta expedientes agrupados por folio para el panel del cliente."""
+    conn = get_connection()
+    c = conn.cursor()
+
+    where_clauses = []
+    params = []
+
+    if correo and isinstance(correo, str) and correo.strip():
+        where_clauses.append("LOWER(m.correo) = ?")
+        params.append(correo.strip().lower())
+    elif folio and token and isinstance(folio, str) and isinstance(token, str) and folio.strip() and token.strip():
+        where_clauses.append("m.no_folio = ? AND (m.token_seguimiento = ? OR UPPER(m.token_seguimiento) = ?)")
+        params.extend([folio.strip(), token.strip(), token.strip().upper()])
+    elif folio and isinstance(folio, str) and folio.strip():
+        where_clauses.append("m.no_folio = ?")
+        params.append(folio.strip())
+    else:
+        conn.close()
+        return []
+
+    sql = f"""
+        SELECT m.id, m.no_solicitud, m.no_folio, m.no_cotizacion, m.cliente, m.rfc, m.correo, m.telefono,
+               m.fecha_recepcion, m.fecha_emision, m.vigencia, m.estado, m.es_in_situ, m.token_seguimiento,
+               m.no_orden_compra, m.orden_compra_pdf, m.fecha_aceptacion_cliente, m.aplica_iva, m.clave_area,
+               a.nombre as nombre_area
+        FROM solicitudes_master m
+        LEFT JOIN areas_tecnicas a ON m.clave_area = a.clave
+        WHERE {' AND '.join(where_clauses)}
+        ORDER BY m.id DESC
+    """
+    c.execute(sql, tuple(params))
+    solicitudes = [dict(r) for r in c.fetchall()]
+
+    folios_dict = {}
+    for sol in solicitudes:
+        fid = sol['no_folio']
+        if fid not in folios_dict:
+            folios_dict[fid] = {
+                "no_folio": fid,
+                "cliente": sol['cliente'],
+                "rfc": sol['rfc'],
+                "correo": sol['correo'],
+                "telefono": sol['telefono'],
+                "fecha_recepcion": sol['fecha_recepcion'],
+                "estado_general": sol['estado'],
+                "token_seguimiento": sol.get('token_seguimiento') or '',
+                "no_orden_compra": sol.get('no_orden_compra') or '',
+                "orden_compra_pdf": sol.get('orden_compra_pdf') or '',
+                "fecha_aceptacion_cliente": sol.get('fecha_aceptacion_cliente') or '',
+                "solicitudes": [],
+                "partidas": [],
+                "subtotal": 0.0,
+                "iva": 0.0,
+                "total": 0.0,
+                "tiene_cotizacion": False
+            }
+
+        c.execute("""
+            SELECT p.id, p.solicitud_id, p.sub_solicitud_id, p.numero_partida, p.descripcion_equipo,
+                   p.marca, p.modelo, p.no_serie, p.alcance_solicitado, p.descripcion_servicio,
+                   p.tiempo_dias_habiles, p.cantidad, p.precio_unitario, p.precio_total,
+                   p.es_no_realizable, p.aceptada_cliente, p.estado_partida,
+                   s.fecha_recepcion_prog, s.fecha_inicio_prog, s.fecha_entrega_prog
+            FROM partidas p
+            LEFT JOIN sub_solicitudes_at s ON p.sub_solicitud_id = s.id
+            WHERE p.solicitud_id = ?
+            ORDER BY p.numero_partida ASC
+        """, (sol['id'],))
+        partidas = [dict(p) for p in c.fetchall()]
+        sol['partidas'] = partidas
+        folios_dict[fid]['solicitudes'].append(sol)
+        folios_dict[fid]['partidas'].extend(partidas)
+
+        if sol.get('no_cotizacion'):
+            folios_dict[fid]['tiene_cotizacion'] = True
+            folios_dict[fid]['no_cotizacion'] = sol['no_cotizacion']
+            folios_dict[fid]['fecha_emision_cot'] = sol['fecha_emision']
+            folios_dict[fid]['vigencia_cot'] = sol['vigencia']
+
+        for pt in partidas:
+            if not pt.get('es_no_realizable'):
+                pt_total = float(pt.get('precio_total') or 0.0)
+                folios_dict[fid]['subtotal'] += pt_total
+
+    for fid, f_data in folios_dict.items():
+        sub = f_data['subtotal']
+        iva = round(sub * 0.16, 2)
+        f_data['iva'] = iva
+        f_data['total'] = round(sub + iva, 2)
+
+    conn.close()
+    return list(folios_dict.values())
+
+def aceptar_cotizacion_cliente(no_folio: str, datos_aceptacion: dict, token: str = None, correo: str = None):
+    """Formaliza la aceptación de cotización por parte del cliente."""
+    conn = get_connection()
+    c = conn.cursor()
+
+    if token:
+        c.execute("SELECT id FROM solicitudes_master WHERE no_folio = ? AND (token_seguimiento = ? OR UPPER(token_seguimiento) = ?)", (no_folio, token, token.upper()))
+    elif correo:
+        c.execute("SELECT id FROM solicitudes_master WHERE no_folio = ? AND LOWER(correo) = ?", (no_folio, correo.strip().lower()))
+    else:
+        conn.close()
+        raise ValueError("Credencial de acceso inválida para este folio.")
+
+    rows = c.fetchall()
+    if not rows:
+        conn.close()
+        raise ValueError("Folio no encontrado o no tiene permisos para aceptarlo.")
+
+    now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    no_oc = datos_aceptacion.get("no_orden_compra", "").strip()
+    pdf_path = datos_aceptacion.get("orden_compra_pdf", "")
+    partidas_aceptadas = datos_aceptacion.get("partidas_aceptadas", [])
+
+    c.execute("""
+        UPDATE solicitudes_master
+        SET estado = 'ACEPTADA_CLIENTE',
+            no_orden_compra = ?,
+            orden_compra_pdf = ?,
+            fecha_aceptacion_cliente = ?,
+            fecha_aceptacion_cotizacion = ?
+        WHERE no_folio = ?
+    """, (no_oc, pdf_path, now_str, now_str, no_folio))
+
+    c.execute("""
+        UPDATE sub_solicitudes_at
+        SET estado = 'ACEPTADA'
+        WHERE solicitud_id IN (SELECT id FROM solicitudes_master WHERE no_folio = ?)
+    """, (no_folio,))
+
+    if partidas_aceptadas:
+        for pid in partidas_aceptadas:
+            c.execute("UPDATE partidas SET aceptada_cliente = 1 WHERE id = ?", (pid,))
+
+    conn.commit()
+    conn.close()
+
+    log_auditoria(correo or "cliente.portal@cenam.mx", "ACEPTACION_COTIZACION_CLIENTE", "SOLICITUD_MASTER", no_folio, {
+        "no_orden_compra": no_oc,
+        "partidas_aceptadas": partidas_aceptadas,
+        "fecha": now_str
+    })
+
+    return {"status": "success", "no_folio": no_folio, "mensaje": "Aceptación registrada con éxito."}
 
 if __name__ == "__main__":
     init_db()

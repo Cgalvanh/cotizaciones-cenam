@@ -178,6 +178,12 @@ class UnifiedCursor:
     def execute(self, sql, params=()):
         if self.engine == "POSTGRES":
             sql_conv = sql.replace("?", "%s")
+            # Traducción transparente de SQLite INSERT OR REPLACE para PostgreSQL
+            if "INSERT OR REPLACE INTO" in sql_conv.upper():
+                sql_conv = re.sub(r"(?i)INSERT\s+OR\s+REPLACE\s+INTO", "INSERT INTO", sql_conv)
+                if "ON CONFLICT" not in sql_conv.upper():
+                    sql_conv += " ON CONFLICT DO NOTHING"
+
             sql_upper = sql_conv.strip().upper()
             is_insert = sql_upper.startswith("INSERT INTO")
             if is_insert and "RETURNING" not in sql_upper:
@@ -706,7 +712,10 @@ def seed_cloud_initial_data(conn, engine):
     if os.path.exists(areas_path):
         with open(areas_path, mode="r", encoding="utf-8") as f:
             for row in csv.DictReader(f):
-                c.execute("INSERT OR REPLACE INTO areas_tecnicas (clave, nombre) VALUES (?, ?)", (row['Clave'].strip(), row['Nombre'].strip()))
+                clave = (row.get('clave') or row.get('Clave') or row.get('codigo') or '').strip()
+                nombre = (row.get('nombre') or row.get('Nombre') or row.get('division_oficial') or '').strip()
+                if clave and nombre:
+                    c.execute("INSERT INTO areas_tecnicas (clave, nombre) VALUES (?, ?) ON CONFLICT (clave) DO UPDATE SET nombre = EXCLUDED.nombre", (clave, nombre))
                 
     c.execute("SELECT COUNT(*) FROM catalogo_servicios")
     cnt = c.fetchone()[0]
@@ -714,18 +723,36 @@ def seed_cloud_initial_data(conn, engine):
     if cnt == 0 and os.path.exists(cat_path):
         with open(cat_path, mode="r", encoding="utf-8") as f:
             for row in csv.DictReader(f):
-                c.execute("""
-                INSERT INTO catalogo_servicios (
-                    clave_servicio, clave_area, nombre_tramite, supuesto,
-                    alcance, observaciones, costo, fundamento_juridico,
-                    es_in_situ, dias_habiles_defecto
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """, (
-                    row['Clave_Servicio'], row['Clave_Area'], row['Nombre_Tramite'],
-                    row['Supuesto'], row['Alcance'], row['Observaciones'],
-                    float(row['Costo']), row['Fundamento_Juridico'],
-                    row['Es_In_Situ'], int(row['Dias_Habiles_Defecto'])
-                ))
+                clave_serv = (row.get('Clave_Servicio') or row.get('clave_servicio') or '').strip()
+                clave_area = (row.get('Clave_Area') or row.get('clave_area') or '').strip()
+                nombre_tramite = (row.get('Nombre_Tramite') or row.get('nombre_tramite') or '').strip()
+                supuesto = (row.get('Supuesto') or row.get('supuesto') or '').strip()
+                alcance = (row.get('Alcance') or row.get('alcance') or '').strip()
+                obs = (row.get('Observaciones') or row.get('observaciones') or '').strip()
+                try:
+                    costo = float(row.get('Costo') or row.get('costo') or 0.0)
+                except Exception:
+                    costo = 0.0
+                fundamento = (row.get('Fundamento_Juridico') or row.get('fundamento_juridico') or '').strip()
+                es_in_situ = (row.get('Es_In_Situ') or row.get('es_in_situ') or 'NO').strip()
+                try:
+                    dias = int(row.get('Dias_Habiles_Defecto') or row.get('dias_habiles_defecto') or 5)
+                except Exception:
+                    dias = 5
+
+                if clave_serv and clave_area:
+                    c.execute("""
+                    INSERT OR REPLACE INTO catalogo_servicios (
+                        clave_servicio, clave_area, nombre_tramite, supuesto,
+                        alcance, observaciones, costo, fundamento_juridico,
+                        es_in_situ, dias_habiles_defecto
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """, (
+                        clave_serv, clave_area, nombre_tramite,
+                        supuesto, alcance, obs,
+                        costo, fundamento,
+                        es_in_situ, dias
+                    ))
 
     c.execute("SELECT COUNT(*) FROM usuarios")
     user_cnt = c.fetchone()[0]

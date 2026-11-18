@@ -6,3 +6,6 @@ nube_segura/.env
 generated_docs/
 nube_segura/generated_docs/
 nube_segura/__pycache__/
+client_secret*.json
+*.secret
+
