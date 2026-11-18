@@ -187,6 +187,14 @@ INDEX_HTML = """<!DOCTYPE html>
                 </div>
             </div>
             <div class="flex items-center space-x-3">
+                <div class="hidden lg:flex items-center space-x-2 mr-2">
+                    <a href="/solicitud" target="_blank" class="text-xs bg-amber-50 hover:bg-amber-100 text-amber-900 font-bold px-3 py-1.5 rounded-lg border border-amber-300 transition flex items-center gap-1.5 shadow-sm" title="Abrir Formulario Web de Captura para Clientes">
+                        <i class="fa-solid fa-earth-americas text-amber-600"></i> Formulario Clientes
+                    </a>
+                    <a href="/portal" target="_blank" class="text-xs bg-blue-50 hover:bg-blue-100 text-blue-900 font-bold px-3 py-1.5 rounded-lg border border-blue-200 transition flex items-center gap-1.5 shadow-sm" title="Abrir Portal de Seguimiento y Aprobación">
+                        <i class="fa-solid fa-user-shield text-blue-600"></i> Portal Clientes
+                    </a>
+                </div>
                 <div id="role-selector-container" class="bg-slate-100 p-1 rounded-lg flex border border-slate-300">
                     <button id="btn-role-ssi" onclick="setRole('SSI')" class="px-3 py-1.5 rounded-md text-xs font-semibold bg-blue-900 text-white shadow-sm flex items-center gap-1.5 transition">
                         <i class="fa-solid fa-building"></i> Ventanilla SSI
@@ -663,7 +671,14 @@ INDEX_HTML = """<!DOCTYPE html>
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ correo, password })
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (!res.ok || data.status !== 'success') {
                     errorDiv.innerText = data.detail || 'Credenciales inválidas. Verifique correo y contraseña.';
                     errorDiv.classList.remove('hidden');
@@ -858,7 +873,14 @@ INDEX_HTML = """<!DOCTYPE html>
                     method: 'POST',
                     body: formData
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     cargarDatosExtraidosEnFormulario(data);
                     statusDiv.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> Datos extraídos exitosamente. Revise los campos abajo antes de turnar.</span>`;
@@ -887,7 +909,14 @@ INDEX_HTML = """<!DOCTYPE html>
                     method: 'POST',
                     body: formData
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     cargarDatosExtraidosEnFormulario(data);
                     statusDiv.innerHTML = `<span class="text-emerald-700 font-bold"><i class="fa-solid fa-circle-check"></i> Datos extraídos exitosamente. Revise y asigne abajo.</span>`;
@@ -1082,7 +1111,14 @@ INDEX_HTML = """<!DOCTYPE html>
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     const sols = data.data.solicitudes_creadas || [];
                     let solListStr = sols.map(s => `• Solicitud ${s.no_solicitud} (División ${s.clave_area} [${s.es_in_situ ? 'IN SITU' : 'LAB CENAM'}]) con ${s.total_partidas} partida(s)`).join('\\n');
@@ -1167,7 +1203,14 @@ INDEX_HTML = """<!DOCTYPE html>
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ sub_solicitud_id: subId, nueva_area: nuevaArea })
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     alert(data.message);
                     loadDevueltasSSI();
@@ -1305,7 +1348,14 @@ INDEX_HTML = """<!DOCTYPE html>
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({solicitud_id: solicitudId})
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     alert(`No. de Cotización ${data.no_cotizacion} asignado con éxito.`);
                     loadCotizacionesSSI();
@@ -1494,7 +1544,14 @@ INDEX_HTML = """<!DOCTYPE html>
                         partidas_seleccionadas: selMap
                     })
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     alert(`Aceptación confirmada (${data.aceptadas} partidas turnadas a CS-AT).`);
                     loadProgramacionSSI();
@@ -1513,7 +1570,14 @@ INDEX_HTML = """<!DOCTYPE html>
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ solicitud_id: solicitudId })
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     alert(data.message);
                     loadProgramacionSSI();
@@ -1613,7 +1677,14 @@ INDEX_HTML = """<!DOCTYPE html>
                         representante_legal_cenam: repCenam
                     })
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     alert(data.message);
                     loadConfirmacionSSI();
@@ -1799,7 +1870,14 @@ INDEX_HTML = """<!DOCTYPE html>
                     headers: {'Content-Type': 'application/json'},
                     body: JSON.stringify({ sub_solicitud_id: subId, motivo_devolucion: motivo, area_sugerida: sug })
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     alert(data.message);
                     loadPendingAT();
@@ -1828,7 +1906,14 @@ INDEX_HTML = """<!DOCTYPE html>
                         respuesta: resp
                     })
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     alert(data.message);
                     loadPendingAT();
@@ -1877,7 +1962,14 @@ INDEX_HTML = """<!DOCTYPE html>
                         partidas: partidasPayload
                     })
                 });
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     alert("✅ Cotización validada y turnada a SSI exitosamente (Precios verificados).");
                     loadPendingAT();
@@ -2056,7 +2148,14 @@ INDEX_HTML = """<!DOCTYPE html>
             statusDiv.innerHTML = '<span class="text-blue-700"><i class="fa-solid fa-spinner fa-spin"></i> Ejecutando limpieza segura...</span>';
             try {
                 const res = await fetch('/api/mantenimiento/limpiar-bd', {method: 'POST'});
-                const data = await res.json();
+                let data = null;
+                const contentType = res.headers.get("content-type") || "";
+                if (contentType.includes("application/json")) {
+                    data = await res.json();
+                } else {
+                    const text = await res.text();
+                    data = { detail: text || `Error del servidor (${res.status})` };
+                }
                 if (res.ok) {
                     statusDiv.innerHTML = `<div class="p-4 bg-emerald-50 text-emerald-800 rounded-lg text-xs font-semibold">✅ ${data.message}</div>`;
                     inicializarFormularioVacio();

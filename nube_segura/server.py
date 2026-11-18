@@ -27,6 +27,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 import uvicorn
 
+# Cargar variables de entorno desde .env
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except Exception:
+    pass
+
 # Selección automática de motor de base de datos (Cloud Postgres vs SQLite Local)
 if os.getenv("DATABASE_URL"):
     try:
@@ -61,6 +68,15 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    import traceback
+    traceback.print_exc()
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Error interno del servidor: {str(exc)}"}
+    )
 
 # Montar archivos estáticos
 os.makedirs("static/img", exist_ok=True)
@@ -280,6 +296,12 @@ async def extraer_datos(
             },
             "instrumentos": inst_list
         }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error al procesar el archivo o texto: {str(e)}")
     finally:
         if temp_dir:
             shutil.rmtree(temp_dir, ignore_errors=True)
@@ -291,31 +313,38 @@ def registrar_expediente(payload: Dict[str, Any] = Body(...)):
     Genera el Folio Maestro (XXXX-YYYYPR) y N Solicitudes independientes (YYYY###PR)
     según la Alternativa 3 de CENAM.
     """
-    cliente_raw = payload.get("cliente", {})
-    if isinstance(cliente_raw, str):
-        cliente_data = {
-            "cliente": cliente_raw,
-            "representante": payload.get("representante", ""),
-            "telefono": payload.get("telefono", ""),
-            "correo": payload.get("correo", ""),
-            "rfc": payload.get("rfc", ""),
-            "pais": payload.get("pais", "México"),
-            "es_extranjero": payload.get("es_extranjero", 0),
-            "aplica_iva": payload.get("aplica_iva", 1)
-        }
-    else:
-        cliente_data = cliente_raw
+    try:
+        cliente_raw = payload.get("cliente", {})
+        if isinstance(cliente_raw, str):
+            cliente_data = {
+                "cliente": cliente_raw,
+                "representante": payload.get("representante", ""),
+                "telefono": payload.get("telefono", ""),
+                "correo": payload.get("correo", ""),
+                "rfc": payload.get("rfc", ""),
+                "pais": payload.get("pais", "México"),
+                "es_extranjero": payload.get("es_extranjero", 0),
+                "aplica_iva": payload.get("aplica_iva", 1)
+            }
+        else:
+            cliente_data = cliente_raw
 
-    instrumentos = payload.get("instrumentos", [])
-    if not instrumentos:
-        raise HTTPException(status_code=400, detail="Debe incluir al menos un instrumento para calibración.")
-        
-    resultado = db.crear_expediente_y_solicitudes(cliente_data, instrumentos, user_correo="ssi@cenam.mx")
-    return {
-        "status": "success",
-        "message": f"Expediente registrado con éxito con Folio {resultado['no_folio']}",
-        "data": resultado
-    }
+        instrumentos = payload.get("instrumentos", [])
+        if not instrumentos:
+            raise HTTPException(status_code=400, detail="Debe incluir al menos un instrumento para calibración.")
+            
+        resultado = db.crear_expediente_y_solicitudes(cliente_data, instrumentos, user_correo="ssi@cenam.mx")
+        return {
+            "status": "success",
+            "message": f"Expediente registrado con éxito con Folio {resultado['no_folio']}",
+            "data": resultado
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail=f"Error al registrar expediente: {str(e)}")
 
 # Endpoint de compatibilidad directa
 @app.post("/api/solicitudes/upload-docx")
@@ -1045,6 +1074,112 @@ def download_contrato_pdf(sub_id: int):
     )
 
 # ========================================================
+# ENDPOINTS PÚBLICOS DE PORTAL DE CLIENTES Y CÓDIGO OTP
+# ========================================================
+
+@app.post("/api/public/solicitudes/crear")
+def public_crear_solicitud(payload: Dict[str, Any] = Body(...)):
+    """
+    Registro público de solicitud web con generación automática de Folio y Clave de Seguimiento.
+    El expediente ingresa a SSI para su revisión técnica con la lógica institucional habitual.
+    """
+    cliente = payload.get("cliente", {})
+    instrumentos = payload.get("instrumentos", [])
+    if not cliente.get("cliente"):
+        raise HTTPException(status_code=400, detail="Debe ingresar la Razón Social / Nombre del Cliente.")
+    if not instrumentos:
+        raise HTTPException(status_code=400, detail="Debe incluir al menos un instrumento para calibración.")
+
+    resultado = db.crear_solicitud_web(cliente, instrumentos)
+
+    # Enviar correo de acuse automático
+    correo = cliente.get("correo", "").strip()
+    if correo:
+        try:
+            email_service.enviar_acuse_solicitud(
+                correo=correo,
+                no_folio=resultado["no_folio"],
+                token_seguimiento=resultado["token_seguimiento"],
+                num_instrumentos=len(instrumentos),
+                cliente_nombre=cliente.get("cliente", "")
+            )
+        except Exception as e:
+            print(f"[ERROR ENVIANDO ACUSE] {e}")
+
+    return {
+        "status": "success",
+        "message": f"Solicitud registrada exitosamente con Folio {resultado['no_folio']}",
+        "data": resultado
+    }
+
+@app.post("/api/public/auth/solicitar-otp")
+def public_solicitar_otp(payload: Dict[str, Any] = Body(...)):
+    """Genera y envía un código numérico OTP de 6 dígitos válido por 10 minutos."""
+    correo = payload.get("correo", "").strip().lower()
+    if not correo or "@" not in correo:
+        raise HTTPException(status_code=400, detail="Debe proporcionar un correo electrónico corporativo válido.")
+
+    codigo = db.crear_codigo_otp(correo)
+    email_res = email_service.enviar_codigo_otp(correo, codigo)
+
+    return {
+        "status": "success",
+        "message": f"Código de verificación enviado a {correo}",
+        "dev_otp": email_res.get("dev_otp")
+    }
+
+@app.post("/api/public/auth/verificar-otp")
+def public_verificar_otp(payload: Dict[str, Any] = Body(...)):
+    """Valida el código OTP de 6 dígitos del cliente."""
+    correo = payload.get("correo", "").strip().lower()
+    codigo = payload.get("codigo", "").strip()
+    if not correo or not codigo:
+        raise HTTPException(status_code=400, detail="Correo y código son obligatorios.")
+
+    es_valido = db.verificar_codigo_otp(correo, codigo)
+    if not es_valido:
+        raise HTTPException(status_code=400, detail="El código es incorrecto o ha expirado. Por favor solicite uno nuevo.")
+
+    return {
+        "status": "success",
+        "correo": correo,
+        "message": "Autenticación exitosa"
+    }
+
+@app.get("/api/public/solicitudes/consultar")
+def public_consultar_solicitudes(
+    correo: Optional[str] = None,
+    folio: Optional[str] = None,
+    token: Optional[str] = None
+):
+    """Consulta folios, cotizaciones y fechas programadas del cliente."""
+    correo_val = str(correo).strip() if (isinstance(correo, str) and correo.strip()) else None
+    folio_val = str(folio).strip() if (isinstance(folio, str) and folio.strip()) else None
+    token_val = str(token).strip() if (isinstance(token, str) and token.strip()) else None
+
+    if not correo_val and not folio_val:
+        raise HTTPException(status_code=400, detail="Debe proporcionar un correo o número de folio.")
+
+    folios = db.consultar_solicitudes_cliente(correo=correo_val, folio=folio_val, token=token_val)
+    return folios
+
+@app.post("/api/public/solicitudes/aceptar-cotizacion")
+def public_aceptar_cotizacion(payload: Dict[str, Any] = Body(...)):
+    """Formaliza la aceptación de cotización por el cliente con su Orden de Compra."""
+    no_folio = payload.get("no_folio", "").strip()
+    no_oc = payload.get("no_orden_compra", "").strip()
+    correo = payload.get("correo", "").strip()
+    token = payload.get("token", "").strip()
+
+    if not no_folio:
+        raise HTTPException(status_code=400, detail="El número de Folio es obligatorio.")
+    if not no_oc:
+        raise HTTPException(status_code=400, detail="El número de Orden de Compra o Pedido Oficial es obligatorio.")
+
+    res = db.aceptar_cotizacion_cliente(no_folio, payload, token=token, correo=correo)
+    return res
+
+# ========================================================
 # ENDPOINT DE MANTENIMIENTO (LIMPIEZA OPERATIVA)
 # ========================================================
 
@@ -1062,7 +1197,17 @@ def limpiar_bd_operativa():
 def index_page():
     return HTMLResponse(content=INDEX_HTML)
 
+@app.get("/solicitud", response_class=HTMLResponse)
+def solicitud_page():
+    return HTMLResponse(content=SOLICITUD_PUBLIC_HTML)
+
+@app.get("/portal", response_class=HTMLResponse)
+def portal_page():
+    return HTMLResponse(content=PORTAL_CLIENTE_HTML)
+
 from ui_template import INDEX_HTML
+from portal_template import SOLICITUD_PUBLIC_HTML, PORTAL_CLIENTE_HTML
+import email_service
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8000))
